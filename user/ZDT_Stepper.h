@@ -19,6 +19,9 @@ void ZDT_Stepper_USRT_Init(void);
 void ZDT_Stepper_USRT_RX_callback(uint16_t Size);
 void ZDT_Stepper_Enable(uint8_t id, uint8_t enable, uint8_t sync_flag);
 void ZDT_Stepper_Set_Speed(uint8_t id, uint8_t dir, uint16_t speed_rate, float speed_f, uint8_t sync_flag);
-void set_motor_position(uint8_t id, uint8_t dir, float speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag);
+void ZDT_Stepper_Set_position(uint8_t id, uint8_t dir, float speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag);
+void ZDT_Stepper_Set_T_position(uint8_t id, uint8_t dir, uint16_t accel_accel, uint16_t decel_accel, float max_speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag);
+void ZDT_Stepper_start_sync_motion(uint8_t id);
+void ZDT_Stepper_stop(uint8_t id, uint8_t sync_flag);
 void ZDT_Stepper_init(void);
 #endif

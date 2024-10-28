@@ -119,12 +119,13 @@ void StartDefaultTask(void *argument)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     // ZDT_Stepper_Set_Speed(1, CW, 200, 600, SYNC_DISABLE);
-    set_motor_position(1, CW, 200, 0, ABS_POS_MODE, SYNC_DISABLE);
-    osDelay(2000);
+    ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_DISABLE);
+    osDelay(500);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    set_motor_position(1, CCW, 200, 120, ABS_POS_MODE, SYNC_DISABLE);
+    // ZDT_Stepper_Set_T_position(1, CCW, 200, 200, 200, 360 * 2, ABS_POS_MODE, SYNC_DISABLE);
+    ZDT_Stepper_stop(1, SYNC_DISABLE);
     // ZDT_Stepper_Set_Speed(1, CCW, 200, 600, SYNC_DISABLE);
-    osDelay(2000);
+    osDelay(500);
     // printf("Hello from defaultTask\n");
     // osDelay(20);
     osDelay(1);

@@ -77,7 +77,7 @@ void ZDT_Stepper_Set_Speed(uint8_t id, uint8_t dir, uint16_t speed_rate, float s
  * @param position_mode 模式 REL_POS_MODE 相对位置模式 ABS_POS_MODE 绝对位置模式
  * @param sync_flag 多机同步标志位  SYNC_ENABLE 同步  SYNC_DISABLE 不同步
  */
-void set_motor_position(uint8_t id, uint8_t dir, float speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag)
+void ZDT_Stepper_Set_position(uint8_t id, uint8_t dir, float speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag)
 {
     // 转换速度为两个字节
     uint16_t speed = (uint16_t)(speed_f * 10); // 速度乘以 10
@@ -102,32 +102,56 @@ void set_motor_position(uint8_t id, uint8_t dir, float speed_f, float position_a
 
     HAL_UART_Transmit(&Stepper_Uart_Handle, command, sizeof(command), HAL_MAX_DELAY);
 }
-void set_motor_T_position(uint8_t id, uint8_t sign, uint16_t accel_accel, uint16_t decel_accel, uint16_t max_speed, int32_t position_angle, uint8_t position_mode, uint8_t sync_flag)
+void ZDT_Stepper_Set_T_position(uint8_t id, uint8_t dir, uint16_t accel_accel, uint16_t decel_accel, float max_speed_f, float position_angle_f, uint8_t position_mode, uint8_t sync_flag)
 {
+    // 转换速度为两个字节
+    uint16_t max_speed = (uint16_t)(max_speed_f * 10); // 速度乘以 10
+
+    // 转换位置角度为四个字节
+    uint32_t position_angle = (uint32_t)(position_angle_f * 10); // 直接使用 int32_t 进行转换
     // 命令格式
     uint8_t command[16];
-    command[0] = id;                        // 地址
-    command[1] = 0xFD;                      // 命令头
-    command[2] = sign;                      // 符号 (01: 负位置, 00: 正位置)
-    command[3] = (accel_accel >> 8) & 0xFF; // 加速加速度高位
-    command[4] = accel_accel & 0xFF;        // 加速加速度低位
-    command[5] = (decel_accel >> 8) & 0xFF; // 减速加速度高位
-    command[6] = decel_accel & 0xFF;        // 减速加速度低位
-    command[7] = (max_speed >> 8) & 0xFF;   // 最大速度高位
-    command[8] = max_speed & 0xFF;          // 最大速度低位
-    command[9] = (position >> 24) & 0xFF;   // 位置角度高位
-    command[10] = (position >> 16) & 0xFF;  // 位置角度次高位
-    command[11] = (position >> 8) & 0xFF;   // 位置角度次低位
-    command[12] = position & 0xFF;          // 位置角度低位
-    command[13] = position_mode;            // 相对/绝对位置标志
-    command[14] = sync_flag;                // 多机同步标志位
+    command[0] = id;                             // 地址
+    command[1] = 0xFD;                           // 命令头
+    command[2] = dir;                            // 符号 (01: 负位置, 00: 正位置)
+    command[3] = (accel_accel >> 8) & 0xFF;      // 加速加速度高位
+    command[4] = accel_accel & 0xFF;             // 加速加速度低位
+    command[5] = (decel_accel >> 8) & 0xFF;      // 减速加速度高位
+    command[6] = decel_accel & 0xFF;             // 减速加速度低位
+    command[7] = (max_speed >> 8) & 0xFF;        // 最大速度高位
+    command[8] = max_speed & 0xFF;               // 最大速度低位
+    command[9] = (position_angle >> 24) & 0xFF;  // 位置角度高位
+    command[10] = (position_angle >> 16) & 0xFF; // 位置角度次高位
+    command[11] = (position_angle >> 8) & 0xFF;  // 位置角度次低位
+    command[12] = position_angle & 0xFF;         // 位置角度低位
+    command[13] = position_mode;                 // 相对/绝对位置标志
+    command[14] = sync_flag;                     // 多机同步标志位
+    command[15] = 0x6B;                          // 校验字节
 
-    // 计算校验字节
-    uint8_t checksum = calculate_checksum(command, 15);
+    HAL_UART_Transmit(&Stepper_Uart_Handle, command, sizeof(command), HAL_MAX_DELAY);
+}
+void ZDT_Stepper_start_sync_motion(uint8_t id)
+{
+    // 命令格式
+    uint8_t command[3];
+    command[0] = id;   // 地址
+    command[1] = 0xFF; // 命令头
+    command[2] = 0x66; // 多机同步运动命令
+    command[3] = 0x6B; // 校验字节
 
-    // 发送数据到串口2
-    send_data_via_serial2(command, 15);
-    send_data_via_serial2(&checksum, 1);
+    HAL_UART_Transmit(&Stepper_Uart_Handle, command, sizeof(command), HAL_MAX_DELAY);
+}
+
+void ZDT_Stepper_stop(uint8_t id, uint8_t sync_flag)
+{
+    // 命令格式
+    uint8_t command[5];
+    command[0] = id;        // 地址
+    command[1] = 0xFE;      // 命令头
+    command[2] = 0x98;      // 立即停止命令
+    command[3] = sync_flag; // 多机同步标志位
+    command[4] = 0x6B;      // 校验字节
+    HAL_UART_Transmit(&Stepper_Uart_Handle, command, sizeof(command), HAL_MAX_DELAY);
 }
 void ZDT_Stepper_init(void)
 {
