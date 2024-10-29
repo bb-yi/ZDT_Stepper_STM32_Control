@@ -67,6 +67,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
   if (huart == &huart1)
   {
+    ZDT_Stepper_Enable(1, Disable, SYNC_DISABLE);
+
     // HAL_UART_Transmit(&huart1, Rx_data, Size, HAL_MAX_DELAY);
     HAL_UART_Transmit(&huart2, Rx_data, Size, HAL_MAX_DELAY);
     strcpy(received_string, (char *)Rx_data);

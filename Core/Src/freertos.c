@@ -114,18 +114,68 @@ void MX_FREERTOS_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  osDelay(500);
+  uint8_t delay_time = 5;
+  ZDT_Stepper_Read_version(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_resistance_and_inductance(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_bus_voltage(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_bus_average_current(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_phase_current(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_encoder_raw_value(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_encoder_calibrated_value(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_DISABLE);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_target_position(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_current_speed(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_current_position(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_position_error(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_driver_temperature(1);
+  osDelay(delay_time);
+  ZDT_Stepper_Read_motor_status_flags(1);
+  // ZDT_Stepper_trigger_encoder_calibration(1);
   /* Infinite loop */
   for (;;)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    // 加速部分
+    for (uint8_t i = 0; i < 100; i++)
+    {
+      ZDT_Stepper_Set_Speed(1, CW, 600, i * 15, SYNC_DISABLE); // 设置步进电机速度
+      osDelay(5);
+      ZDT_Stepper_Read_current_speed(1);
+      osDelay(5);
+    }
+
+    // 减速部分
+    for (uint8_t i = 100; i > 0; i--)
+    {
+      ZDT_Stepper_Set_Speed(1, CW, 600, i * 15, SYNC_DISABLE); // 设置步进电机速度
+      osDelay(5);
+      ZDT_Stepper_Read_current_speed(1);
+      osDelay(5);
+    }
+
     // ZDT_Stepper_Set_Speed(1, CW, 200, 600, SYNC_DISABLE);
-    ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_DISABLE);
-    osDelay(500);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    // ZDT_Stepper_torque_control(1, CW, 200, 100, SYNC_DISABLE);
+
+    // ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, ABS_POS_MODE, SYNC_DISABLE);
+    // osDelay(2000);
+    // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     // ZDT_Stepper_Set_T_position(1, CCW, 200, 200, 200, 360 * 2, ABS_POS_MODE, SYNC_DISABLE);
-    ZDT_Stepper_stop(1, SYNC_DISABLE);
+    // ZDT_Stepper_stop(1, SYNC_DISABLE);
     // ZDT_Stepper_Set_Speed(1, CCW, 200, 600, SYNC_DISABLE);
-    osDelay(500);
+    // osDelay(2000);
     // printf("Hello from defaultTask\n");
     // osDelay(20);
     osDelay(1);
