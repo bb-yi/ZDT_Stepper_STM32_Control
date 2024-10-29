@@ -118,53 +118,59 @@ void StartDefaultTask(void *argument)
   uint8_t delay_time = 5;
   ZDT_Stepper_Read_version(1);
   osDelay(delay_time);
-  ZDT_Stepper_Read_resistance_and_inductance(1);
+  ZDT_Stepper_Read_version(2);
   osDelay(delay_time);
-  ZDT_Stepper_Read_bus_voltage(1);
+  ZDT_Stepper_Read_version(3);
   osDelay(delay_time);
-  ZDT_Stepper_Read_bus_average_current(1);
+  ZDT_Stepper_Read_version(4);
   osDelay(delay_time);
-  ZDT_Stepper_Read_phase_current(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_encoder_raw_value(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_encoder_calibrated_value(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_DISABLE);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_target_position(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_current_speed(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_current_position(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_position_error(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_driver_temperature(1);
-  osDelay(delay_time);
-  ZDT_Stepper_Read_motor_status_flags(1);
+  ZDT_Stepper_stop(0, SYNC_DISABLE);
+
+  // ZDT_Stepper_Read_resistance_and_inductance(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_bus_voltage(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_bus_average_current(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_phase_current(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_encoder_raw_value(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_encoder_calibrated_value(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_DISABLE);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_target_position(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_current_speed(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_current_position(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_position_error(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_driver_temperature(1);
+  // osDelay(delay_time);
+  // ZDT_Stepper_Read_motor_status_flags(1);
   // ZDT_Stepper_trigger_encoder_calibration(1);
   /* Infinite loop */
   for (;;)
   {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     // 加速部分
-    for (uint8_t i = 0; i < 100; i++)
-    {
-      ZDT_Stepper_Set_Speed(1, CW, 600, i * 15, SYNC_DISABLE); // 设置步进电机速度
-      osDelay(5);
-      ZDT_Stepper_Read_current_speed(1);
-      osDelay(5);
-    }
+    osDelay(delay_time);
 
-    // 减速部分
-    for (uint8_t i = 100; i > 0; i--)
-    {
-      ZDT_Stepper_Set_Speed(1, CW, 600, i * 15, SYNC_DISABLE); // 设置步进电机速度
-      osDelay(5);
-      ZDT_Stepper_Read_current_speed(1);
-      osDelay(5);
-    }
+    // ZDT_Stepper_Set_T_position(1, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_ENABLE);
+    // osDelay(delay_time);
+    // ZDT_Stepper_Set_T_position(2, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_ENABLE);
+    // osDelay(delay_time);
+    // ZDT_Stepper_Set_T_position(3, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_ENABLE);
+    // osDelay(delay_time);
+    // ZDT_Stepper_Set_T_position(4, CW, 200, 200, 200, 120, REL_POS_MODE, SYNC_ENABLE);
+    // osDelay(1000);
+    // ZDT_Stepper_start_sync_motion(0);
+    // osDelay(2000);
+    ZDT_Stepper_stop(0, SYNC_DISABLE); // 立即停止
+    // ZDT_Stepper_Set_Speed(0, CW, 200, 600, SYNC_DISABLE);
 
     // ZDT_Stepper_Set_Speed(1, CW, 200, 600, SYNC_DISABLE);
     // ZDT_Stepper_torque_control(1, CW, 200, 100, SYNC_DISABLE);

@@ -84,7 +84,7 @@ void receive_motor_status(uint8_t *data, uint16_t size)
         }
         snprintf(statu_message, sizeof(statu_message), (status == 0x02) ? "执行成功" : "执行失败");
         assign_message_based_on_command(command_id, message, sizeof(message));
-        // printf("电机 %d:%s:%s\n", motor_id, message, statu_message);
+        printf("电机 %d:%s:%s\n", motor_id, message, statu_message);
         // 这里可以根据需要进一步处理接收到的指令
     }
     else
